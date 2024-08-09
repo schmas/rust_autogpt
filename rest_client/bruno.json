@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "rust_autogpt",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
