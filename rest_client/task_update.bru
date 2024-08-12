@@ -1,7 +1,7 @@
 meta {
-  name: create_task
+  name: task_update
   type: http
-  seq: 2
+  seq: 5
 }
 
 post {
@@ -16,8 +16,8 @@ headers {
 
 body:json {
   {
-    "id": 3,
-    "name": "My second task",
-    "completed": false
+    "id": 2,
+    "name": "Go swimming",
+    "completed": true
   }
 }

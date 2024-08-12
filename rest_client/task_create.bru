@@ -1,12 +1,12 @@
 meta {
-  name: delete_task
+  name: task_create
   type: http
-  seq: 6
+  seq: 2
 }
 
-delete {
-  url: http://localhost:8080/task/2
-  body: none
+post {
+  url: http://localhost:8080/task
+  body: json
   auth: none
 }
 
@@ -16,7 +16,7 @@ headers {
 
 body:json {
   {
-    "id": 2,
+    "id": 3,
     "name": "My second task",
     "completed": false
   }
