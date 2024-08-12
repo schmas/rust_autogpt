@@ -1,12 +1,12 @@
 meta {
-  name: Create Task
+  name: get_task
   type: http
-  seq: 2
+  seq: 3
 }
 
-post {
-  url: http://localhost:8080/task
-  body: json
+get {
+  url: http://localhost:8080/task/2
+  body: none
   auth: none
 }
 

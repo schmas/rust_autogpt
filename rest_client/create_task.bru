@@ -1,0 +1,24 @@
+meta {
+  name: create_task
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/task
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  content-type: application/json
+}
+
+body:json {
+  {
+    "id": 2,
+    "name": "My second task",
+    "completed": false
+  }
+}
