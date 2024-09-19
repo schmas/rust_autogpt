@@ -136,10 +136,7 @@ async fn login(app_state: web::Data<AppState>, user: web::Json<User>) -> impl Re
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let db = match Database::load_from_file() {
-        Ok(db) => db,
-        Err(_) => Database::new(),
-    };
+    let db = Database::load_from_file().unwrap_or_else(|_| Database::new());
 
     let data = web::Data::new(AppState { db: Mutex::new(db) });
 
