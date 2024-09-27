@@ -1,0 +1,4 @@
+[tasks.run]
+workspace = true
+command = "cargo"
+args = ["run"]
