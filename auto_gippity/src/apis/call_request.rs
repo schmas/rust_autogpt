@@ -1,11 +1,11 @@
-use crate::models::general::llm::{ChatCompletion, Message};
+use crate::models::general::llm::{APIResponse, ChatCompletion, Message};
 use dotenv::dotenv;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::Client;
 use std::env;
 
 // Call Large Language Mode (i.e. GPT-4o)
-pub async fn call_gpt(messages: Vec<Message>) {
+pub async fn call_gpt(messages: Vec<Message>) -> Result<String, Box<dyn std::error::Error + Send>> {
     dotenv().ok();
 
     // Extract API Key Information
@@ -23,17 +23,22 @@ pub async fn call_gpt(messages: Vec<Message>) {
     // Create api key header
     headers.insert(
         "authorization",
-        HeaderValue::from_str(&format!("Bearer {}", api_key)).unwrap(),
+        HeaderValue::from_str(&format!("Bearer {}", api_key))
+            .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?,
     );
 
     // Create OpenAPI Org header
     headers.insert(
         "OpenAI-Organization",
-        HeaderValue::from_str(api_org.as_str()).unwrap(),
+        HeaderValue::from_str(api_org.as_str())
+            .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?,
     );
 
     // Create the client
-    let client = Client::builder().default_headers(headers).build().unwrap();
+    let client = Client::builder()
+        .default_headers(headers)
+        .build()
+        .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?;
 
     // Create chat completion
     let chat_completion = ChatCompletion {
@@ -42,15 +47,19 @@ pub async fn call_gpt(messages: Vec<Message>) {
         temperature: 0.1,
     };
 
-    // Troubleshooting
-    let res_raw = client
+    // Extract API Response
+    let res: APIResponse = client
         .post(url)
         .json(&chat_completion)
         .send()
         .await
-        .unwrap();
+        .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?
+        .json()
+        .await
+        .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?;
 
-    dbg!(res_raw.text().await.unwrap());
+    // Send Response
+    Ok(res.choices[0].message.content.clone())
 }
 
 #[cfg(test)]
@@ -64,6 +73,15 @@ mod tests {
             role: "user".to_string(),
             content: "Hi there, this is a test. Give me a short response.".to_string(),
         }];
-        call_gpt(messages).await;
+        let result = call_gpt(messages).await;
+        match result {
+            Ok(res_str) => {
+                dbg!(res_str);
+                assert!(true);
+            }
+            Err(_) => {
+                assert!(false);
+            }
+        }
     }
 }
